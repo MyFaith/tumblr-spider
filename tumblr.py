@@ -34,7 +34,7 @@ class Tumblr(threading.Thread):
             if source and source.find('https://www.tumblr.com/video') != -1 and source not in self.total_url:
                 self.total_url.append(source)
                 tmp_source.append(source)
-                print(Fore.GREEN + '新链接: %s' %source)
+                print(Fore.GREEN + '新链接: ' + Fore.CYAN + source)
 
         new_user = soup.find_all(class_='reblog-link')
         for user in new_user:
@@ -43,19 +43,19 @@ class Tumblr(threading.Thread):
                 self.user_queue.put(username)
                 self.total_user.append(username)
                 tmp_user.append(username)
-                print(Fore.RED + '新用户: %s' %username)
+                print(Fore.RED + '新用户: ' + Fore.YELLOW + username)
 
         mutex.acquire()
         for username in tmp_user:
             db.user.insert({
                 'username': username
             })
-            print(Fore.RED + '添加用户: %s' %username)
+            print(Fore.RED + '添加用户: ' + Fore.YELLOW + username)
         for source in tmp_source:
             db.source.insert({
                  'source': source
             })
-            print(Fore.GREEN + '添加链接: %s' %source)
+            print(Fore.GREEN + '添加链接: ' + Fore.CYAN + source)
         mutex.release()
 
 
