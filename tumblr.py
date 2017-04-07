@@ -7,9 +7,10 @@ import time
 import argparse
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
+from colorama import init, Fore
 
-db = MongoClient(host='192.168.199.217').tumblr
-
+db = MongoClient(host='127.0.0.1').tumblr
+init(autoreset=True)
 
 mutex = threading.Lock()
 
@@ -33,7 +34,7 @@ class Tumblr(threading.Thread):
             if source and source.find('https://www.tumblr.com/video') != -1 and source not in self.total_url:
                 self.total_url.append(source)
                 tmp_source.append(source)
-                print('Discover new link: %s' %source)
+                print(Fore.GREEN + '新链接: %s' %source)
 
         new_user = soup.find_all(class_='reblog-link')
         for user in new_user:
@@ -42,19 +43,19 @@ class Tumblr(threading.Thread):
                 self.user_queue.put(username)
                 self.total_user.append(username)
                 tmp_user.append(username)
-                print('Descover new user: %s' %username)
+                print(Fore.RED + '新用户: %s' %username)
 
         mutex.acquire()
         for username in tmp_user:
             db.user.insert({
                 'username': username
             })
-            print('Add user: %s' %username)
+            print(Fore.RED + '添加用户: %s' %username)
         for source in tmp_source:
             db.source.insert({
                  'source': source
             })
-            print('Add source: %s' %source)
+            print(Fore.GREEN + '添加链接: %s' %source)
         mutex.release()
 
 
