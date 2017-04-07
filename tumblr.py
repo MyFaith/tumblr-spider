@@ -61,9 +61,11 @@ class Tumblr(threading.Thread):
 
     def run(self):
         while self.user_queue.not_empty:
-            url = 'http://%s.tumblr.com/' %self.user_queue.get()
-            self.download(url)
-            time.sleep(2)
+            user = self.user_queue.get()
+            if not str(user).startswith('-'):
+                url = 'http://%s.tumblr.com/' %user
+                self.download(url)
+                time.sleep(2)
 
 def main():
     parser = argparse.ArgumentParser('tumblr')
